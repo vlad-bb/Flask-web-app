@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+      <div class="container">
+        <div class="row justify-content-center mb-3">
+          <h1>Convect PDF to MP3</h1>
+        </div>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-info">{{message}}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <div class="row justify-content-center">
+          <form
+            class="col-sm-6"
+            action="/pdf_convector"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <div class="form-group justify-content-center">
+              <input
+                class="form-control"
+                type="text"
+                placeholder="Choose language PDF text: 'en' or 'ua' or 'ru'"
+                name="language"
+              />
+            </div>
+            <div class="form-group">
+              <div class="custom-file">
+                <input
+                  class="custom-file-input"
+                  type="file"
+                  name="pdf"
+                  id="customFile"
+                />
+                <label class="custom-file-label" for="customFile"
+                  >Choose PDF file</label
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary col-sm-12" type="submit">
+                Upload
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+{% endblock %}
