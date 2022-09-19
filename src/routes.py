@@ -7,7 +7,7 @@ from marshmallow import ValidationError
 
 from . import app
 from src.libs.validation_file import allowed_file
-from src.repository import users, pics
+from src.repository import users, pics, audios
 from src.libs import convect
 from src.libs.validation_lang import validation_lang
 # from src import repository -> repository.users
@@ -181,7 +181,8 @@ def pdf_convector():
             filename = secure_filename(file.filename)
             file_path = pathlib.Path(app.config['UPLOAD_FOLDER']) / filename
             file.save(file_path)
-            convect.pdf_to_mp3(file_path, session['username']['id'], language)
+            user_id = session['username']['id']
+            convect.pdf_to_mp3(file_path, user_id, language)
             flash('Successfully!')
             return redirect(url_for('pdf_convector'))
     return render_template('pages/pdf_convector.html', auth=auth)

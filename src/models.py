@@ -12,6 +12,7 @@ class User(db.Model):
     hash = db.Column(db.String(255), nullable=False)
     token_cookie = db.Column(db.String(255), nullable=True, default=None)
     pictures = relationship('Picture', back_populates='user')
+    audios = relationship('Audio', back_populates='user')
 
     def __repr__(self):
         return f"User({self.id}, {self.username}, {self.email})"
@@ -28,3 +29,14 @@ class Picture(db.Model):
 
     def __repr__(self):
         return f"Picture({self.id}, {self.path}, {self.size})"
+
+
+class Audio(db.Model):
+    __tablename__ = 'audios'
+    id = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.String(350), unique=True, nullable=False)
+    description = db.Column(db.String(300), nullable=False)
+    size = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    user = relationship('User', cascade='all, delete', back_populates='audios')
+
