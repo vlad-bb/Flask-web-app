@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
     <div class="row mb-3">
-        <h1>Your pictures</h1>
+        <h1>Your Audio</h1>
     </div>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -13,34 +13,28 @@
     {% endif %}
     {% endwith %}
     <div class="row">
-        {% for pic in pictures %}
+        {% for audio in audios %}
         <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img
-                        class="bd-placeholder-img card-img-top"
-                        src="{{pic.path}}"
-                        width="100%"
-                        height="225"
-                        alt="150"
-                        srcset=""
-                        style="object-fit: contain"
-                />
+            <div class="audio_item mb-4 shadow-sm">
+                <audio controls>
+                    <source src="{{audio.path}}" type="audio/mpeg">
+                </audio>
                 <div class="card-body">
-                    <p class="card-text">{{pic.description}}</p>
+                    <p class="card-text">{{audio.description}}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            <a class="btn btn-sm btn-success" href="/pictures/edit/{{pic.id}}"
-                            >Редактировать</a
+                            <a class="btn btn-sm btn-success" href="#" download="{{audio.path}}"
+                            >Download</a
                             >
-                            <form action="/pictures/delete/{{pic.id}}" method="post">
+                            <form action="/audios/delete/{{audio.id}}" method="post">
                                 <button class="btn btn-sm btn-danger">
-                                    Удалить
+                                    Delete
                                 </button>
                             </form>
                         </div>
                         <small class="text-muted">File size</small>
-                        <small class="text-muted">{{(pic.size)/1000000}} </small>
-                        <small class="text-muted"> MB</small>
+                        <small class="text-muted">{{(audio.size)/1000000}} </small>
+                        <small class="text-muted">MB</small>
                     </div>
                 </div>
             </div>

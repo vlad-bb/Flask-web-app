@@ -7,7 +7,7 @@ from marshmallow import ValidationError
 
 from . import app
 from src.libs.validation_file import allowed_file
-from src.repository import users, pics, audios
+from src.repository import users, pics, mp3
 from src.libs import convect
 from src.libs.validation_lang import validation_lang
 # from src import repository -> repository.users
@@ -33,7 +33,7 @@ def healthcheck():
 @app.route('/', strict_slashes=False)
 def index():
     auth = True if 'username' in session else False
-    return render_template('pages/index.html', title='Cloud Pictures!', auth=auth)
+    return render_template('pages/index.html', title='Swarm', auth=auth)
 
 
 @app.route('/pictures', strict_slashes=False)
@@ -83,7 +83,7 @@ def login():
         if user is None:
             return redirect(url_for('login'))
         session['username'] = {"username": user.username, "id": user.id}
-        response = make_response(redirect(url_for('index')))
+        response = make_response(redirect(url_for('pdf_convector')))
         if remember:
             # Треба створить token, та покласти його в cookie та БД
             token = str(uuid.uuid4())
@@ -130,7 +130,7 @@ def pictures_upload():
             file.save(file_path)
             pics.upload_file_for_user(session['username']['id'], file_path, description)
             flash('Uploaded successfully!')
-            return redirect(url_for('pictures_upload'))
+            return redirect(url_for('pictures'))
     return render_template('pages/upload.html', auth=auth)
 
 
@@ -184,5 +184,41 @@ def pdf_convector():
             user_id = session['username']['id']
             convect.pdf_to_mp3(file_path, user_id, language)
             flash('Successfully!')
-            return redirect(url_for('pdf_convector'))
+            return redirect(url_for('audios'))
     return render_template('pages/pdf_convector.html', auth=auth)
+
+
+@app.route('/audios', strict_slashes=False)
+def audios():
+    auth = True if 'username' in session else False
+    if not auth:
+        return redirect(request.url)
+    audios_user = mp3.get_audios_user(session['username']['id'])
+    print(audios_user)
+    return render_template('pages/audios.html', auth=auth, audios=audios_user)
+
+
+@app.route('/audios/edit_mp3/<pic_id>', methods=['GET', 'POST'], strict_slashes=False)
+def audio_edit(pic_id):
+    auth = True if 'username' in session else False
+    if not auth:
+        return redirect(request.url)
+
+    audio = mp3.get_audio_user(pic_id, session['username']['id'])
+    if request.method == 'POST':
+        description = request.form.get('description')
+        mp3.update_audio(pic_id, session['username']['id'], description)
+        flash('Operation successfully!')
+        return redirect(url_for('audios'))
+    return render_template('pages/edit_mp3.html', auth=auth, audio=audio)
+
+
+@app.route('/audios/delete/<pic_id>', methods=['POST'], strict_slashes=False)
+def audio_delete(pic_id):
+    auth = True if 'username' in session else False
+    if not auth:
+        return redirect(request.url)
+    if request.method == 'POST':
+        mp3.delete_audio(pic_id, session['username']['id'])
+        flash('Operation successfully!')
+    return redirect(url_for('audios'))
