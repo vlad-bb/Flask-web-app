@@ -166,7 +166,7 @@ def pdf_convector():
     if not auth:
         return redirect(request.url)
     if request.method == 'POST':
-        language = validation_lang(request.form.get('language'))
+        language = validation_lang(request.form.get("optradio"))
         if not language:
             flash('No file part')
             return redirect(request.url)
